@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2bce2fab-773c-4f49-9bd0-3fc29f9075c6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/game_agent.py" afterPath="$PROJECT_DIR$/game_agent.py" />
       <change beforePath="$PROJECT_DIR$/tournament.py" afterPath="$PROJECT_DIR$/tournament.py" />
     </list>
@@ -18,17 +17,12 @@
       <file leaf-file-name="game_agent.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/game_agent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="74" column="61" lean-forward="false" selection-start-line="74" selection-start-column="61" selection-end-line="74" selection-end-column="61" />
+            <state relative-caret-position="2243">
+              <caret line="534" column="24" lean-forward="false" selection-start-line="534" selection-start-column="24" selection-end-line="534" selection-end-column="24" />
               <folding>
                 <element signature="e#199#212#0" expanded="true" />
                 <element signature="e#389#615#0" expanded="false" />
-                <element signature="e#667#819#0" expanded="false" />
-                <element signature="e#869#930#0" expanded="false" />
-                <element signature="e#969#1253#0" expanded="false" />
-                <element signature="e#1294#1629#0" expanded="false" />
-                <element signature="e#2646#3122#0" expanded="false" />
-                <element signature="e#3171#3911#0" expanded="false" />
+                <element signature="e#5473#6213#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -37,8 +31,8 @@
       <file leaf-file-name="tournament.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tournament.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="429">
-              <caret line="135" column="49" lean-forward="true" selection-start-line="135" selection-start-column="49" selection-end-line="135" selection-end-column="49" />
+            <state relative-caret-position="1980">
+              <caret line="132" column="71" lean-forward="true" selection-start-line="132" selection-start-column="71" selection-end-line="132" selection-end-column="71" />
               <folding>
                 <element signature="e#689#705#0" expanded="true" />
               </folding>
@@ -79,6 +73,7 @@
       <find>_exp_decay</find>
       <find>unique</find>
       <find>delta</find>
+      <find>TODO</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -240,8 +235,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tournament.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="429">
-          <caret line="135" column="49" lean-forward="true" selection-start-line="135" selection-start-column="49" selection-end-line="135" selection-end-column="49" />
+        <state relative-caret-position="1980">
+          <caret line="132" column="71" lean-forward="true" selection-start-line="132" selection-start-column="71" selection-end-line="132" selection-end-column="71" />
           <folding>
             <element signature="e#689#705#0" expanded="true" />
           </folding>
@@ -250,17 +245,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/game_agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="74" column="61" lean-forward="false" selection-start-line="74" selection-start-column="61" selection-end-line="74" selection-end-column="61" />
+        <state relative-caret-position="2243">
+          <caret line="534" column="24" lean-forward="false" selection-start-line="534" selection-start-column="24" selection-end-line="534" selection-end-column="24" />
           <folding>
             <element signature="e#199#212#0" expanded="true" />
             <element signature="e#389#615#0" expanded="false" />
-            <element signature="e#667#819#0" expanded="false" />
-            <element signature="e#869#930#0" expanded="false" />
-            <element signature="e#969#1253#0" expanded="false" />
-            <element signature="e#1294#1629#0" expanded="false" />
-            <element signature="e#2646#3122#0" expanded="false" />
-            <element signature="e#3171#3911#0" expanded="false" />
+            <element signature="e#5473#6213#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -26,18 +26,17 @@ def get_unique_moves(my_moves, opp_moves):
     return moves
 
 
-def distance_to_center(move, width, height):
-    x, y = move
-    cx, cy = (math.ceil(width / 2), math.ceil(height / 2))
-    return (width - cx) ** 2 + (height - cy) ** 2 - (x - cx) ** 2 - (y - cy) ** 2
-
-
 def get_shared_moves(my_moves, opp_moves):
     shared_moves = my_moves and opp_moves
     return shared_moves
 
 
 def custom_score(game, player):
+    """
+    An evaluation method which calculates the difference between
+    the number of moves available to player and the number of moves
+    available to the opponent.
+    """
     if game.is_loser(player):
         return float("-inf")
     elif game.is_winner(player):
@@ -50,6 +49,13 @@ def custom_score(game, player):
 
 
 def custom_score_2(game, player):
+    """
+    An evaluation method which returns a value corresponding
+    to the number of unique moves available to a player.
+
+    It can be thought of as a way to value future states where
+    player is running away from the opponent.
+    """
     if game.is_loser(player):
         return float("-inf")
     elif game.is_winner(player):
@@ -64,6 +70,13 @@ def custom_score_2(game, player):
 
 
 def custom_score_3(game, player):
+    """
+    An evaluation method which similar to `custom_score_1` calculates
+    the difference between the moves available to each player.
+
+    However, this function also adds a weight to the opponent's moves
+    making the agent more aggressive.
+    """
     if game.is_loser(player):
         return float("-inf")
     elif game.is_winner(player):
@@ -76,6 +89,14 @@ def custom_score_3(game, player):
 
 
 def moves_delta_exp(game, player):
+    """
+    A heuristic evaluation method which calculates the difference
+    between available moves count between the current player and the opponent.
+
+    This method also applies an exponential growth weight towards the opponent's
+    moves count as the game progress, making the agent more aggressive as the
+    number of blank spaces goes down.
+    """
     if game.is_loser(player):
         return float("-inf")
     elif game.is_winner(player):
@@ -88,7 +109,6 @@ def moves_delta_exp(game, player):
     r = (1 / blank_spaces_count)
     x = (1 / blank_spaces) + 2
     """
-    # (2 > weight > 1.5)
     weight = 1.5 * np.power((1 + (1 / blank_spaces_count)), ((1 / blank_spaces_count) + 2))
     my_moves = game.get_legal_moves(player)
     opponent_moves = game.get_legal_moves(game.get_opponent(player))
@@ -97,6 +117,10 @@ def moves_delta_exp(game, player):
 
 
 def moves_delta_unique(game, player):
+    """
+    This evaluation function is a combination of custom_score_1 and custom_score_2
+    where the difference between the unique moves' counts is calculated as the game state value.
+    """
     if game.is_loser(player):
         return float("-inf")
     elif game.is_winner(player):
@@ -112,32 +136,14 @@ def moves_delta_unique(game, player):
     return float(len(my_unique_moves) - len(opponent_unique_moves))
 
 
-def moves_delta_unique_exp(game, player):
-    if game.is_loser(player):
-        return float("-inf")
-    elif game.is_winner(player):
-        return float("inf")
-
-    blank_spaces_count = len(game.get_blank_spaces())
-    """
-    Exponential growth: y = a(1 + r)^x
-    a = 1.5
-    r = 0.1 # decay rate
-    x = (1 / blank_spaces) + 1.5
-    """
-    weight = 1.5 * np.power((1 + 0.1), ((1 / blank_spaces_count) + 1.5))
-
-    my_moves = game.get_legal_moves(player)
-    opponent_moves = game.get_legal_moves(game.get_opponent(player))
-
-    my_unique_moves = get_unique_moves(my_moves, opponent_moves)
-    opponent_unique_moves = get_unique_moves(opponent_moves, my_moves)
-
-    # return float(len(my_unique_moves))
-    return float(len(my_unique_moves) - (len(opponent_unique_moves) * weight))
-
-
 def moves_delta_walls(game, player):
+    """
+    An evaluation function which, similar to custom_score_1, calculates the difference
+    in the counts of moves available to each player, however, it also penalizes
+    moves which are against the game board wall towards the end of the game.
+
+    Inspired by:
+    """
     if game.is_loser(player):
         return float("-inf")
     elif game.is_winner(player):
@@ -167,6 +173,31 @@ def moves_delta_walls(game, player):
     my_ratio = len(my_moves) - (weight * len(my_corner_moves))
     opponent_ratio = len(opponent_moves) + (weight * len(opponent_corner_moves))
     return float(my_ratio - opponent_ratio)
+
+
+def moves_delta_unique_exp(game, player):
+    if game.is_loser(player):
+        return float("-inf")
+    elif game.is_winner(player):
+        return float("inf")
+
+    blank_spaces_count = len(game.get_blank_spaces())
+    """
+    Exponential growth: y = a(1 + r)^x
+    a = 1.5
+    r = 0.1 # decay rate
+    x = (1 / blank_spaces) + 1.5
+    """
+    weight = 1.5 * np.power((1 + 0.1), ((1 / blank_spaces_count) + 1.5))
+
+    my_moves = game.get_legal_moves(player)
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
+
+    my_unique_moves = get_unique_moves(my_moves, opponent_moves)
+    opponent_unique_moves = get_unique_moves(opponent_moves, my_moves)
+
+    # return float(len(my_unique_moves))
+    return float(len(my_unique_moves) - (len(opponent_unique_moves) * weight))
 
 
 class IsolationPlayer:
@@ -389,7 +420,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         top_move = (-1, -1)
 
         if len(legal_moves) > 0:
-            legal_moves[0]
+            top_move = legal_moves[0] # default move if any are available
         else:
             return top_move
 
@@ -453,21 +484,23 @@ class AlphaBetaPlayer(IsolationPlayer):
         alpha_score = alpha
         beta_score = beta
 
-        top_move = game.get_legal_moves()[0]
+        legal_moves = game.get_legal_moves()
+        top_move = {"move": (-1, -1), "score": alpha_score}
 
-        score = alpha_score
+        if len(legal_moves) > 0:
+            top_move["move"] = legal_moves[0]
 
         for action in game.get_legal_moves():
 
             new_board = game.forecast_move(action)
-            score = max(score, self.min_value(new_board, depth,
-                                              alpha_score, beta_score, game.active_player))
+            min_val = self.min_value(new_board, depth, alpha_score, beta_score, game.active_player)
+            top_move["score"] = max(top_move["score"], min_val)
 
-            if score > alpha_score:
-                alpha_score = score
-                top_move = action
+            if top_move["score"] > alpha_score:
+                alpha_score = top_move["score"]
+                top_move["move"] = action
 
-        return top_move
+        return top_move["move"]
 
     def max_value(self, game, depth, alpha, beta, player):
 
