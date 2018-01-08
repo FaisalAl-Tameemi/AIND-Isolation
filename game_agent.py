@@ -4,6 +4,7 @@ and include the results in your report.
 """
 import random
 import math
+import numpy as np
 
 
 class SearchTimeout(Exception):
@@ -25,93 +26,147 @@ def get_unique_moves(my_moves, opp_moves):
     return moves
 
 
+def distance_to_center(move, width, height):
+    x, y = move
+    cx, cy = (math.ceil(width / 2), math.ceil(height / 2))
+    return (width - cx) ** 2 + (height - cy) ** 2 - (x - cx) ** 2 - (y - cy) ** 2
+
+
+def get_shared_moves(my_moves, opp_moves):
+    shared_moves = my_moves and opp_moves
+    return shared_moves
+
+
 def custom_score(game, player):
-    """Calculate the heuristic value of a game state from the point of view
-    of the given player.
-
-    This should be the best heuristic function for your project submission.
-
-    Note: this function should be called from within a Player instance as
-    `self.score()` -- you should not need to call this function directly.
-
-    Parameters
-    ----------
-    game : `isolation.Board`
-        An instance of `isolation.Board` encoding the current state of the
-        game (e.g., player locations and blocked cells).
-
-    player : object
-        A player instance in the current game (i.e., an object corresponding to
-        one of the player objects `game.__player_1__` or `game.__player_2__`.)
-
-    Returns
-    -------
-    float
-        The heuristic value of the current game state to the specified player.
-    """
+    if game.is_loser(player):
+        return float("-inf")
+    elif game.is_winner(player):
+        return float("inf")
 
     my_moves = game.get_legal_moves(player)
     opponent_moves = game.get_legal_moves(game.get_opponent(player))
 
-    return float(len(get_unique_moves(my_moves, opponent_moves)))
+    return float(len(my_moves) - len(opponent_moves))
 
 
 def custom_score_2(game, player):
-    """Calculate the heuristic value of a game state from the point of view
-    of the given player.
-
-    Note: this function should be called from within a Player instance as
-    `self.score()` -- you should not need to call this function directly.
-
-    Parameters
-    ----------
-    game : `isolation.Board`
-        An instance of `isolation.Board` encoding the current state of the
-        game (e.g., player locations and blocked cells).
-
-    player : object
-        A player instance in the current game (i.e., an object corresponding to
-        one of the player objects `game.__player_1__` or `game.__player_2__`.)
-
-    Returns
-    -------
-    float
-        The heuristic value of the current game state to the specified player.
-    """
+    if game.is_loser(player):
+        return float("-inf")
+    elif game.is_winner(player):
+        return float("inf")
 
     my_moves = game.get_legal_moves(player)
     opponent_moves = game.get_legal_moves(game.get_opponent(player))
 
-    return float(len(my_moves) - (len(opponent_moves) * 1.5))
+    my_unique_moves = get_unique_moves(my_moves, opponent_moves)
+
+    return float(len(my_unique_moves))
 
 
 def custom_score_3(game, player):
-    """Calculate the heuristic value of a game state from the point of view
-    of the given player.
-
-    Note: this function should be called from within a Player instance as
-    `self.score()` -- you should not need to call this function directly.
-
-    Parameters
-    ----------
-    game : `isolation.Board`
-        An instance of `isolation.Board` encoding the current state of the
-        game (e.g., player locations and blocked cells).
-
-    player : object
-        A player instance in the current game (i.e., an object corresponding to
-        one of the player objects `game.__player_1__` or `game.__player_2__`.)
-
-    Returns
-    -------
-    float
-        The heuristic value of the current game state to the specified player.
-    """
+    if game.is_loser(player):
+        return float("-inf")
+    elif game.is_winner(player):
+        return float("inf")
 
     my_moves = game.get_legal_moves(player)
     opponent_moves = game.get_legal_moves(game.get_opponent(player))
 
     return float(len(my_moves) - (len(opponent_moves) * 1.5))
+
+
+def moves_delta_exp(game, player):
+    if game.is_loser(player):
+        return float("-inf")
+    elif game.is_winner(player):
+        return float("inf")
+
+    blank_spaces_count = len(game.get_blank_spaces())
+    """
+    Exponential growth: y = a(1 + r)^x
+    a = 1.5
+    r = (1 / blank_spaces_count)
+    x = (1 / blank_spaces) + 2
+    """
+    # (2 > weight > 1.5)
+    weight = 1.5 * np.power((1 + (1 / blank_spaces_count)), ((1 / blank_spaces_count) + 2))
+    my_moves = game.get_legal_moves(player)
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
+
+    return float(len(my_moves) - (len(opponent_moves) * weight))
+
+
+def moves_delta_unique(game, player):
+    if game.is_loser(player):
+        return float("-inf")
+    elif game.is_winner(player):
+        return float("inf")
+
+    my_moves = game.get_legal_moves(player)
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
+
+    my_unique_moves = get_unique_moves(my_moves, opponent_moves)
+    opponent_unique_moves = get_unique_moves(opponent_moves, my_moves)
+
+    # return float(len(my_unique_moves))
+    return float(len(my_unique_moves) - len(opponent_unique_moves))
+
+
+def moves_delta_unique_exp(game, player):
+    if game.is_loser(player):
+        return float("-inf")
+    elif game.is_winner(player):
+        return float("inf")
+
+    blank_spaces_count = len(game.get_blank_spaces())
+    """
+    Exponential growth: y = a(1 + r)^x
+    a = 1.5
+    r = 0.1 # decay rate
+    x = (1 / blank_spaces) + 1.5
+    """
+    weight = 1.5 * np.power((1 + 0.1), ((1 / blank_spaces_count) + 1.5))
+
+    my_moves = game.get_legal_moves(player)
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
+
+    my_unique_moves = get_unique_moves(my_moves, opponent_moves)
+    opponent_unique_moves = get_unique_moves(opponent_moves, my_moves)
+
+    # return float(len(my_unique_moves))
+    return float(len(my_unique_moves) - (len(opponent_unique_moves) * weight))
+
+
+def moves_delta_walls(game, player):
+    if game.is_loser(player):
+        return float("-inf")
+    elif game.is_winner(player):
+        return float("inf")
+
+    weight = 1
+    # Penalize having corner moves late in the game
+    if len(game.get_blank_spaces()) < game.width * game.height / 4.:
+        weight = 4
+
+    # game board corners
+    h, w = (game.height, game.width)
+    game_corners = [
+        (0, 0),
+        (0, w - 1),
+        (h - 1, 0),
+        (h - 1, w - 1)
+    ]
+
+    my_moves = game.get_legal_moves(player)
+    my_corner_moves = [move for move in my_moves if move in game_corners]
+
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
+    opponent_corner_moves = [move for move in opponent_moves if move in game_corners]
+
+    # calculate values based on moves while penalizing corner moves
+    my_ratio = len(my_moves) - (weight * len(my_corner_moves))
+    opponent_ratio = len(opponent_moves) + (weight * len(opponent_corner_moves))
+    return float(my_ratio - opponent_ratio)
 
 
 class IsolationPlayer:

@@ -20,8 +20,9 @@ from collections import namedtuple
 from isolation import Board
 from sample_players import (RandomPlayer, open_move_score,
                             improved_score, center_score)
-from game_agent import (MinimaxPlayer, AlphaBetaPlayer, custom_score,
-                        custom_score_2, custom_score_3)
+from game_agent import (MinimaxPlayer, AlphaBetaPlayer, moves_delta_unique,
+                        moves_delta_unique_exp, moves_delta_walls, custom_score, custom_score_2,
+                        custom_score_3, moves_delta_fixed)
 
 NUM_MATCHES = 5  # number of matches against each opponent
 TIME_LIMIT = 150  # number of milliseconds before timeout
@@ -130,9 +131,13 @@ def main():
     # starting position against the same adversaries in the tournament
     test_agents = [
         Agent(AlphaBetaPlayer(score_fn=improved_score), "AB_Improved"),
-        Agent(AlphaBetaPlayer(score_fn=custom_score), "AB_Custom"),
-        Agent(AlphaBetaPlayer(score_fn=custom_score_2), "AB_Custom_2"),
-        Agent(AlphaBetaPlayer(score_fn=custom_score_3), "AB_Custom_3")
+        Agent(AlphaBetaPlayer(score_fn=custom_score), "AB_CUSTOM_1"), # moves count delta
+        Agent(AlphaBetaPlayer(score_fn=custom_score_2), "AB_CUSTOM_2"), # unique moves
+        Agent(AlphaBetaPlayer(score_fn=custom_score_3), "AB_CUSTOM_3"),
+        Agent(AlphaBetaPlayer(score_fn=moves_delta_unique), "DELTA_UNIQ"),
+        Agent(AlphaBetaPlayer(score_fn=moves_delta_unique_exp), "DELTA_UNIQ_EXP"),
+        Agent(AlphaBetaPlayer(score_fn=moves_delta_fixed), "DELTA_FIX"),  # weighted moves count delta
+        Agent(AlphaBetaPlayer(score_fn=moves_delta_walls), "DELTA_WALLS")
     ]
 
     # Define a collection of agents to compete against the test agents
